@@ -2,6 +2,7 @@
 
 import telebot
 import os
+from time import sleep
 from scraper.dadjokes import get_dad_jokes
 from scraper.wallpapers import get_wallpapers
 from telebot.types import InputMediaPhoto
@@ -20,14 +21,28 @@ def send_message(message):
 def dad_jokes(message):
     bot.send_message(message.chat.id, get_dad_jokes(), parse_mode="Markdown")
 
-@bot.message_handler(commands=["wallpaper"])
+@bot.message_handler(commands=["wallpaper", "wallpapers"])
 def get_query(message):
-    text = "What wallpapers are you looking for?"
-    sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, fetch_wallpapers)
+    msg = (message.text).split()
+    msg = " ".join(msg[1:])
+    text = f"Looking for {msg.upper()}"
+    bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    sent_walls = bot.send_media_group(chat_id=message.chat.id, media=[i for i in get_wallpapers(msg)])
 
-def fetch_wallpapers(message):
-    name = message.text
-    bot.send_media_group(chat_id=message.chat.id, media=[InputMediaPhoto(i) for i in get_wallpapers(name)])
+@bot.edited_message_handler(commands=["wallpaper", "wallpapers"])
+def get_edited_query(message):
+    msg = (message.text).split()
+    msg = " ".join(msg[1:])
+    text = f"Looking for {msg.upper()}"
+    bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    sent_walls = bot.send_media_group(chat_id=message.chat.id, media=[i for i in get_wallpapers(msg, 2)])
 
-bot.infinity_polling()
+@bot.message_handler(commands=["test"])
+def test_handler(message):
+    test_text = "Testing..."
+    bot.send_message(message.chat.id, message.text, parse_mode="Markdown")
+
+if __name__ == "__main__":
+    print("Starting Telegram Bot Server...")
+    sleep(1)
+    bot.infinity_polling()
