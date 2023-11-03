@@ -1,1 +1,9 @@
 .env
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+__pycache__
+telebot/__pycache__
+scraper/__pycache__
