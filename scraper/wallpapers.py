@@ -22,4 +22,4 @@ def get_wallpapers(query: str, page: int = 1):
     else:
         return False
 
-get_wallpapers("sabrina")
+# print(len([i for i in get_wallpapers("thor")]))
