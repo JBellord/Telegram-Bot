@@ -28,6 +28,14 @@ def get_query(message):
     text = f"Looking for {msg.upper()}"
     bot.send_message(message.chat.id, text, parse_mode="Markdown")
     sent_walls = bot.send_media_group(chat_id=message.chat.id, media=[i for i in get_wallpapers(msg)])
+    bot.register_next_step_handler(sent_walls[-1], fetch_more_pics, msg)
+
+def fetch_more_pics(message, msg):
+    message = message.text
+    if "more" in message:
+        text = f"Looking for more {msg} wallpaper"
+        bot.send_message(message.chat.id, text, parse_mode="Markdown")
+        sent_walls = bot.send_media_group(chat_id=message.chat.id, media=[i for i in get_wallpapers(msg, 2)])
 
 @bot.edited_message_handler(commands=["wallpaper", "wallpapers"])
 def get_edited_query(message):
